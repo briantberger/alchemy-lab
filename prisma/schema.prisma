@@ -14,3 +14,13 @@ model HealthCheck {
 
   @@map("health_checks")
 }
+
+model SRDObject {
+  id          Int      @id @default(autoincrement())
+  index       String   @unique // e.g. "longsword"
+  type        String // e.g. "weapon", "spell", "monster"
+  data        Json // raw object from API
+  lastFetched DateTime @default(now()) // when it was cached
+
+  @@index([type]) // so you can quickly query all "spells" etc.
+}
