@@ -1,29 +1,22 @@
-export async function healthRoutes(fastify) {
-  fastify.get("/health", async (_req, reply) => {
-    try {
-      // Test database connection and create a health check record
-      const healthCheck = await fastify.prisma.healthCheck.create({
-        data: {
-          status: "healthy",
-        },
-      });
+import { FastifyReply, FastifyRequest } from "fastify";
+import { getHealthObject } from "./health.service.ts";
 
-      return {
-        status: "ok",
-        service: "dnd-api",
-        database: "connected",
-        recordId: healthCheck.id,
-        time: healthCheck.createdAt,
-      };
-    } catch (error) {
-      fastify.log.error("Database health check failed:", error);
-      reply.code(500);
-      return {
-        status: "error",
-        service: "dnd-api",
-        database: "disconnected",
-        time: new Date().toISOString(),
-      };
-    }
-  });
+type Params = {
+  type: string;
+  index: string;
+};
+
+export async function getHealthHandler(
+  request: FastifyRequest<{ Params: Params }>,
+  reply: FastifyReply,
+) {
+  const { type, index } = request.params;
+
+  try {
+    const data = await getHealthObject(request.server.prisma);
+    return reply.send(data);
+  } catch (err) {
+    request.log.error("Database health check failed:", err);
+    reply.code(500);
+  }
 }

@@ -1,7 +1,7 @@
 import Fastify from "fastify";
 import cors from "@fastify/cors";
 import prisma from "./plugins/prisma.ts";
-import { healthRoutes } from "./routes/health/health.controller.ts";
+import healthRoutes from "./routes/health/health.routes.ts";
 import srdRoutes from "./routes/srd/srd.routes.ts";
 
 const fastify = Fastify({ logger: true });

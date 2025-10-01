@@ -8,7 +8,6 @@ export async function getSRDObject(
   type: string,
   index: string,
 ) {
-  // Check DB first
   const cached = await prisma.sRDObject.findUnique({
     where: { index },
   });
@@ -17,14 +16,12 @@ export async function getSRDObject(
     return cached.data;
   }
 
-  // Otherwise fetch from API
   const res = await fetch(`${API_BASE}/${type}/${index}`);
   if (!res.ok) {
     throw new Error(`5E API error: ${res.statusText}`);
   }
   const data = await res.json();
 
-  // Store in DB
   await prisma.sRDObject.create({
     data: { index, type, data },
   });
